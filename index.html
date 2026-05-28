@@ -1,1 +1,381 @@
 
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,system-ui);background:var(--color-background-tertiary);color:var(--color-text-primary);font-size:14px}
+.topbar{background:#0d1f3c;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1a3a6b}
+.topbar i{font-size:20px;color:#38b6ff}
+.topbar-t{font-size:14px;font-weight:500;flex:1}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,.4)}
+.tabs{display:flex;background:var(--color-background-primary);border-bottom:.5px solid var(--color-border-tertiary);overflow-x:auto;padding:0 12px}
+.tab{padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--color-text-secondary);white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--color-text-primary)}
+.tab.on{color:#1a6fcf;border-bottom-color:#1a6fcf}
+.pane{display:none;padding:12px 14px}.pane.on{display:block}
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.kl{font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.4px}
+.kv{font-size:20px;font-weight:500;margin-top:2px}
+.ks{font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+.kv.red{color:#c0392b}.kv.amber{color:#d68910}.kv.green{color:#1e8449}
+.panel{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:10px;overflow:hidden}
+.ph{padding:10px 14px;font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;border-bottom:.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.ph i{font-size:15px}
+.sec-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--color-text-tertiary);padding:8px 14px 4px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary)}
+.erow{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s}
+.erow:last-child{border-bottom:none}
+.erow:hover{background:var(--color-background-secondary)}
+.edot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dok{background:#27ae60}.dwarn{background:#f39c12}.ddanger{background:#e74c3c}.dnone{background:#bdc3c7}
+.einfo{flex:1;min-width:0}
+.en{font-size:13px;font-weight:500;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ec{font-size:10px;color:var(--color-text-tertiary);font-family:var(--font-mono,monospace);margin-top:1px}
+.ed{font-size:11px;color:var(--color-text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.emeta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+.bc{background:#B5D4F4;color:#0C447C}.bv{background:#FAC775;color:#633806}
+.bok{background:#EAF3DE;color:#27500A}.bwarn{background:#FAEEDA;color:#633806}.bdanger{background:#FCEBEB;color:#791F1F}.bproc{background:#E1F5EE;color:#085041}.bnone{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.ef{font-size:10px;color:var(--color-text-tertiary)}
+.chart-wrap{padding:10px 14px}
+.cw{position:relative;width:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:8px 14px 0;font-size:11px;color:var(--color-text-secondary)}
+.ld{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+.obs-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin:6px 0}
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.spec{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px}
+.sl{font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.4px}
+.sv{font-size:13px;font-weight:500;margin-top:2px}
+.int-row{display:flex;gap:10px;padding:9px 0;border-bottom:.5px solid var(--color-border-tertiary);align-items:flex-start}
+.int-row:last-child{border-bottom:none}
+.idate{min-width:76px;flex-shrink:0}
+.idatelabel{font-size:11px;font-weight:500;color:var(--color-text-secondary)}
+.itype{font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+.idesc{flex:1;font-size:12px;color:var(--color-text-primary);line-height:1.5}
+.iright{text-align:right;min-width:60px;flex-shrink:0;font-size:11px;font-weight:500}
+.modal-bg{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:100;min-height:600px}
+.modal-bg.open{display:flex;align-items:flex-start;justify-content:center;padding:16px}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:.5px solid var(--color-border-secondary);width:100%;max-width:600px;overflow:hidden;max-height:580px;display:flex;flex-direction:column}
+.mhero{background:#0d1f3c;color:#fff;padding:14px 16px;flex-shrink:0}
+.mtype{font-size:10px;opacity:.5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.mname{font-size:16px;font-weight:500;margin-bottom:2px}
+.mcode{font-size:10px;opacity:.45;font-family:var(--font-mono,monospace)}
+.mbody{padding:14px 16px;overflow-y:auto;flex:1}
+.mclosebtn{float:right;background:rgba(255,255,255,.1);border:.5px solid rgba(255,255,255,.25);color:#fff;padding:4px 10px;border-radius:var(--border-radius-md);cursor:pointer;font-size:11px}
+.sbar{padding:8px 14px;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-primary);position:sticky;top:0;z-index:5}
+.sinput{width:100%;border:.5px solid var(--color-border-secondary);border-radius:20px;padding:7px 14px 7px 32px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+.swrap{position:relative}
+.swrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--color-text-tertiary)}
+.alert-row{display:flex;gap:10px;padding:8px 14px;border-bottom:.5px solid var(--color-border-tertiary);align-items:flex-start}
+.alert-row:last-child{border-bottom:none}
+.atag{flex-shrink:0;min-width:50px;text-align:center}
+.adesc{flex:1;min-width:0}
+.an{font-size:12px;font-weight:500}
+.as{font-size:11px;color:var(--color-text-secondary);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.no-init-tag{font-size:10px;padding:2px 7px;border-radius:20px;background:#FAEEDA;color:#633806}
+</style>
+
+<h2 class="sr-only">Sistema de gestión de mantenimiento de equipos de frío — 75 equipos reales</h2>
+
+<div style="position:relative">
+
+<div class="topbar">
+  <i class="ti ti-temperature-minus" aria-hidden="true"></i>
+  <span class="topbar-t">Gestión Mantenimiento — Equipos de Frío</span>
+  <span class="topbar-sub">75 equipos · 49 intervenciones</span>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="showPane('edt',this)"><i class="ti ti-building" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>EDT (26)</div>
+  <div class="tab" onclick="showPane('tda',this)"><i class="ti ti-building-store" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>TDA Empaque (40)</div>
+  <div class="tab" onclick="showPane('marg',this)"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Margesi (7)</div>
+  <div class="tab" onclick="showPane('tdb',this)"><i class="ti ti-building-factory" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>TDB (2)</div>
+  <div class="tab" onclick="showPane('resumen',this)"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Resumen</div>
+</div>
+
+<!-- ══ EDT ══ -->
+<div class="pane on" id="pane-edt">
+  <div class="krow">
+    <div class="kpi"><div class="kl">Total</div><div class="kv">26</div><div class="ks">equipos</div></div>
+    <div class="kpi"><div class="kl">COIRON</div><div class="kv green">22</div><div class="ks">85%</div></div>
+    <div class="kpi"><div class="kl">Eq. Viejos</div><div class="kv amber">4</div><div class="ks">R22</div></div>
+    <div class="kpi"><div class="kl">Fuera servicio</div><div class="kv red">4</div><div class="ks">todos viejos</div></div>
+    <div class="kpi"><div class="kl">Intervenciones</div><div class="kv">15</div><div class="ks">registradas</div></div>
+  </div>
+  <div class="sbar"><div class="swrap"><i class="ti ti-search" aria-hidden="true"></i><input class="sinput" placeholder="Buscar equipo EDT..." oninput="filtrar('edt',this.value)"></div></div>
+  <div class="panel" id="list-edt"></div>
+</div>
+
+<!-- ══ TDA ══ -->
+<div class="pane" id="pane-tda">
+  <div class="krow">
+    <div class="kpi"><div class="kl">Total</div><div class="kv">40</div><div class="ks">equipos</div></div>
+    <div class="kpi"><div class="kl">COIRON</div><div class="kv green">25</div><div class="ks">63%</div></div>
+    <div class="kpi"><div class="kl">Eq. Viejos</div><div class="kv amber">15</div><div class="ks">R22</div></div>
+    <div class="kpi"><div class="kl">Fuera servicio</div><div class="kv red">9</div><div class="ks">23% flota</div></div>
+    <div class="kpi"><div class="kl">Intervenciones</div><div class="kv">27</div><div class="ks">registradas</div></div>
+  </div>
+  <div class="sbar"><div class="swrap"><i class="ti ti-search" aria-hidden="true"></i><input class="sinput" placeholder="Buscar equipo TDA..." oninput="filtrar('tda',this.value)"></div></div>
+  <div class="panel" id="list-tda"></div>
+</div>
+
+<!-- ══ MARGESI ══ -->
+<div class="pane" id="pane-marg">
+  <div class="krow">
+    <div class="kpi"><div class="kl">Total</div><div class="kv">7</div><div class="ks">equipos</div></div>
+    <div class="kpi"><div class="kl">EQ Viejo</div><div class="kv red">7</div><div class="ks">100% viejos</div></div>
+    <div class="kpi"><div class="kl">Gas</div><div class="kv amber">R22</div><div class="ks">todos</div></div>
+    <div class="kpi"><div class="kl">Fuera servicio</div><div class="kv red">1</div><div class="ks">Túnel 1</div></div>
+    <div class="kpi"><div class="kl">Presupuesto reg.</div><div class="kv">$3.241</div><div class="ks">USD reg.</div></div>
+  </div>
+  <div class="panel" id="list-marg"></div>
+</div>
+
+<!-- ══ TDB ══ -->
+<div class="pane" id="pane-tdb">
+  <div class="krow">
+    <div class="kpi"><div class="kl">Total</div><div class="kv">2</div><div class="ks">equipos</div></div>
+    <div class="kpi"><div class="kl">Estado</div><div class="kv red">Fuera</div><div class="ks">ambos</div></div>
+    <div class="kpi"><div class="kl">Intervenciones</div><div class="kv">0</div><div class="ks">sin registro</div></div>
+  </div>
+  <div class="panel" id="list-tdb"></div>
+</div>
+
+<!-- ══ RESUMEN ══ -->
+<div class="pane" id="pane-resumen">
+  <div class="krow">
+    <div class="kpi"><div class="kl">Flota total</div><div class="kv">75</div><div class="ks">equipos</div></div>
+    <div class="kpi"><div class="kl">COIRON</div><div class="kv green">47</div><div class="ks">63%</div></div>
+    <div class="kpi"><div class="kl">Eq. Viejos</div><div class="kv amber">28</div><div class="ks">37%</div></div>
+    <div class="kpi"><div class="kl">Fuera servicio</div><div class="kv red">16</div><div class="ks">21% flota</div></div>
+    <div class="kpi"><div class="kl">Intervenciones</div><div class="kv">49</div><div class="ks">total</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><i class="ti ti-chart-bar" aria-hidden="true"></i>Equipos por unidad</div>
+      <div class="legend"><span><span class="ld" style="background:#185FA5"></span>COIRON</span><span><span class="ld" style="background:#EF9F27"></span>Viejos</span></div>
+      <div class="chart-wrap"><div class="cw" style="height:160px"><canvas id="cUnidad" role="img" aria-label="Equipos por unidad COIRON vs Viejos: EDT 22/4, TDA 25/15, Margesi 0/7, TDB 0/2">EDT: 22 COIRON 4 Viejos. TDA: 25 COIRON 15 Viejos. Margesi: 0 COIRON 7 Viejos. TDB: 0 COIRON 2 Viejos.</canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><i class="ti ti-chart-donut" aria-hidden="true"></i>Estado operativo</div>
+      <div class="legend"><span><span class="ld" style="background:#27ae60"></span>Operativa</span><span><span class="ld" style="background:#e74c3c"></span>Fuera servicio</span></div>
+      <div class="chart-wrap"><div class="cw" style="height:160px"><canvas id="cEstado" role="img" aria-label="Distribución estado operativo: 59 operativos y 16 fuera de servicio">59 equipos operativos y 16 fuera de servicio.</canvas></div></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><i class="ti ti-calendar" aria-hidden="true"></i>Intervenciones por mes (2025-2026)</div>
+      <div class="chart-wrap"><div class="cw" style="height:150px"><canvas id="cMeses" role="img" aria-label="Intervenciones mensuales 2025-2026">Histórico de intervenciones por mes.</canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><i class="ti ti-coin" aria-hidden="true"></i>Presupuesto USD por orden</div>
+      <div class="legend"><span><span class="ld" style="background:#1D9E75"></span>USD registrado</span></div>
+      <div class="chart-wrap"><div class="cw" style="height:150px"><canvas id="cPresup" role="img" aria-label="Presupuesto USD por orden de compra registrada">Costos en USD por orden de compra.</canvas></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Trabajos no iniciados — pendientes urgentes</div>
+    <div id="pending-list"></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><i class="ti ti-clock-exclamation" aria-hidden="true"></i>Equipos sin registro de mantenimiento</div>
+    <div id="sinreg-list"></div>
+  </div>
+</div>
+
+<!-- MODAL FICHA -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const DB = {"EDT": [{"sector": "Camara de almacenamiento 1 y 2", "codigo": "EDT-CA1-V-433-01", "descripcion": "Unid. Condesodora: 4 compresores y 3 ventiladores/2 Unid. Evaporadora: 6 ventiladores ", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Se realiza carga de gas y control de fuga, se repara el colector soldando por una gran perdida que se tenia (se gestiona la compra de un colector nuevo), contro de aceite en compresores", "ultFecha": "10/9/2025", "estado": "Fuera de servicio", "observaciones": "equipo sin gas ", "intervenciones": [{"fecha": "10/9/2025", "desc": "Se realiza carga de gas y control de fuga, se repara el colector soldando por una gran perdida que se tenia (se gestiona la compra de un colector nuevo), contro de aceite en compresores", "estado": "Finalizado", "orden": "1237", "presupuesto": "$1.310", "obs": "Se encontro una fisura de gran tama\u00f1o en el colector por lo que se soldo provisoriamente hasta la compra de uno nuevo"}, {"fecha": "", "desc": "Cambio de colector en reemplazo del reparado", "estado": "No iniciado", "orden": "", "presupuesto": "", "obs": "Estamos a la espera de que molina haga las modificaciones necesarias para poder colocarlo"}]}, {"sector": "Sala de proceso", "codigo": "EDT-CP-V-3340-02", "descripcion": "Unid. Condesadora: 3 compresores y 3 ventiladores/8 Unid. Evaporadora: cada una con 5 ventiladores ", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Se realiza carga de gas y control de fugas, se cambio 4 forzadores quemados y 6 capacitores, se realizo cambio y control de aceite en los compresores, se coloco un ciclador proveniente de TDA", "ultFecha": "10/9/2025", "estado": "Fuera de servicio", "observaciones": "fuga de gas valvula rotalok.( remplazar 1 o 2 valvulas )", "intervenciones": [{"fecha": "10/9/2025", "desc": "Se realiza carga de gas y control de fugas, se cambio 4 forzadores quemados y 6 capacitores, se realizo cambio y control de aceite en los compresores, se coloco un ciclador proveniente de TDA", "estado": "Finalizado", "orden": "1237", "presupuesto": "$630", "obs": "El ciclador se encontraba sin funcionar lo que ocacionaba que no entren todos los compresores"}]}, {"sector": "Camara de pre frio", "codigo": "EDT-CPF-V-122-03", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/ Unid. Evaporadora: 2 ventiladores ", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Se realiza carga de gas y control de fugas, se controla nivel de aceite. Requiero una resistencia calefactora en la unidad evaporadora y modificaciones en su tablero electrico", "ultFecha": "10/9/2025", "estado": "Fuera de servicio", "observaciones": "No posee resistencia calefactora en la unid evaporadora tampco un contactor que la accione", "intervenciones": [{"fecha": "10/9/2025", "desc": "Se realiza carga de gas y control de fugas, se controla nivel de aceite. Requiero una resistencia calefactora en la unidad evaporadora y modificaciones en su tablero electrico", "estado": "En proceso", "orden": "1237", "presupuesto": "$175", "obs": "Falta realizar la compra de uns resistencia calefactora para la unidad evaporadora y un contactor"}]}, {"sector": "Camara de pre frio", "codigo": "EDT-CPF-V-123-04", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/ Unid. Evaporadora: 3 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Se realiza carga de gas y control de fugas, se controla nivel de aceite. Requiero una resistencia calefactora en la unidad evaporadora y modificaciones en su tablero electrico", "ultFecha": "10/9/2025", "estado": "Fuera de servicio", "observaciones": "No posee resistencia calefactora en la unid evaporadora tampco un contactor que la accione", "intervenciones": [{"fecha": "10/9/2025", "desc": "Se realiza carga de gas y control de fugas, se controla nivel de aceite. Requiero una resistencia calefactora en la unidad evaporadora y modificaciones en su tablero electrico", "estado": "En proceso", "orden": "1237", "presupuesto": "$175", "obs": "Falta realizar la compra de uns resistencia calefactora para la unidad evaporadora y un contactor"}]}, {"sector": "Tunel 2", "codigo": "EDT-T2-C-122-(30000-250/259)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/ Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "CAMBIO DE DK REPARACION DE FUGA DE GAS. Presenta DK da\u00f1ado, al momento de efectuar la tarea se observa eq sin refrigerante, se presuriza se repara fuga en colector de UE y en rotalock, se prezuriza 24 hs estando ok, se realiza vacio y se carga refrigerante quedando operativo, tambien se agrega aceite.", "ultFecha": "28/8/2025", "estado": "Operativa", "observaciones": "deka da\u00f1ado", "intervenciones": [{"fecha": "28/8/2025", "desc": "CAMBIO DE DK REPARACION DE FUGA DE GAS.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel 2", "codigo": "EDT-T2-C-122-(30000-250/258)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/ Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Tunel 1", "codigo": "EDT-T1-C-122-(30000-250/256)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Tunel 1", "codigo": "EDT-T1-C-122-(30000-250/257)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "SE COLOCA CORENCER DE EQUIPO 250/263 PARA DEJAR OPERATIVO 250/257", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "26/8/2025", "desc": "SE COLOCA CORENCER DE EQUIPO 250/263 PARA DEJAR OPERATIVO 250/257", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Pre frio", "codigo": "EDT-PF-C-123-(30000-250/254)", "descripcion": "Unid: Condensadora: 1 compresor y 2 ventiladores/Unid: Evaporadora: 3 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "SE AGREGO ACEITE y carga de refrigerante.", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "Bajo nivel de aceite", "intervenciones": [{"fecha": "26/8/2025", "desc": "SE AGREGO ACEITE y carga de refrigerante. Bajo nivel de aceite.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Pre frio", "codigo": "EDT-PF-C-123-(30000-250/255)", "descripcion": "Unid: Condensadora: 1 compresor y 2 ventiladores/Unid: Evaporadora: 3 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "SE AGREGO ACEITE y carga de refrigerante.", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "Bajo nivel de aceite", "intervenciones": [{"fecha": "26/8/2025", "desc": "SE AGREGO ACEITE y carga de refrigerante.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Camara Industria", "codigo": "EDT-CI-C-111-(10000-100/175)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventilador", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "SE REMPLAZA MONITOR DE TENSION.", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "Queda pendiente cambio de ventilador de la UE", "intervenciones": [{"fecha": "26/8/2025", "desc": "SE REMPLAZA MONITOR DE TENSION.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel Pre Frio", "codigo": "EDT-TPF-C-122-(30000-250/262)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "CAMBIO DE VENTILADOR. Ventilador UC desbalanceado, se reemplaza.", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "paleta de ventilador doblada", "intervenciones": [{"fecha": "26/8/2025", "desc": "CAMBIO DE VENTILADOR.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel Pre Frio", "codigo": "EDT-TPF-C-122-(30000-250/263)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventiladores/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "Cambio de coresense", "ultFecha": "6/12/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "6/12/2025", "desc": "Cambio de coresense", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Sala UNITEC", "codigo": "EDT-S-CU-122-(10000-100/167)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadoras: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala UNITEC", "codigo": "EDT-SU-C-112-( 10000-100/168)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadoras: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "oxido en paneles interior del evaporador y aspa de ventilad", "intervenciones": []}, {"sector": "Sala UNITEC", "codigo": "EDT-SU-C-112-( 10000-100/169)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadoras: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "NO PRESENTO FALLA AL MOMENTO DE CONTROLAR.", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "oxido en paneles interior. mal funcio. en sonda de temp", "intervenciones": [{"fecha": "26/8/2025", "desc": "NO PRESENTO FALLA AL MOMENTO DE CONTROLAR.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Sala UNITEC", "codigo": "EDT-SU-C-112-( 10000-100/170)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadoras: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "oxido en paneles interior del evaporador y aspa de ventilad", "intervenciones": []}, {"sector": "Sala UNITEC", "codigo": "EDT-SU-C-122-(10000-100/171)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadoras: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "oxido en paneles interior del evaporador y aspa de ventilad", "intervenciones": []}, {"sector": "Sala UNITEC", "codigo": "EDT-SU-C-112-( 10000-100/172)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadoras: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "oxido en paneles interior del evaporador y aspa de ventilad", "intervenciones": []}, {"sector": "Camara de almacenamiento n\u00b03", "codigo": "EDT-CA3-C-111-(10000-100/173)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventilador", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "oxido en paneles interior del evaporador y aspa de ventilad", "intervenciones": []}, {"sector": "Camara de almacenamiento n\u00b03", "codigo": "EDT-CA3-C-111-(10000-100/174)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventilador", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "Se detecto fuga en Rotalock, verificar y solucionar", "intervenciones": []}, {"sector": "Tunel 3", "codigo": "EDT-T3-C-112-(30000-250/260)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporador: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "sonda de temperatura", "intervenciones": []}, {"sector": "Tunel 3", "codigo": "EDT-T3-C-112-(30000-250/261)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporador: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "Se cambia sonda de temperatura modulo.", "ultFecha": "27/8/2025", "estado": "Operativa", "observaciones": "Cambiar sonda de temperatura", "intervenciones": [{"fecha": "27/8/2025", "desc": "Se cambia sonda de temperatura modulo.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": "oxido en bornes de sonda"}]}, {"sector": "Camara de almacenamiento 4", "codigo": "EDT-CA4-C-111-(10000-100/203)", "descripcion": "Unid: Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventilador", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "SE AGREGA ACEITE. Ventilador UC reemplazado.", "ultFecha": "26/8/2025", "estado": "Operativa", "observaciones": "ventilador de condensador funcionamiento defectuoso", "intervenciones": [{"fecha": "26/8/2025", "desc": "SE AGREGA ACEITE. Ventilador UC en mal estado, se reemplaza.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Camara de almacenamiento 4", "codigo": "EDT-CA4-C-111-(10000-100/202)", "descripcion": "Unid: Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventilador", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Pasillo Tecnico", "codigo": "EDT-PT-C-112-(10000-100/201)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}], "TDA - EMPAQUE": [{"sector": "Sala de Lavado", "codigo": "TDA-SL-V-133-01", "descripcion": "Unid. Condensadora: 1 compresor y 3 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala de proceso", "codigo": "TDA-SP-V-324-02", "descripcion": "Unid. Condensadora: 3 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "Consta de un compresor quemado", "intervenciones": []}, {"sector": "Sala de proceso", "codigo": "TDA-SP-V-224-03", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala de proceso", "codigo": "TDA-SP-V-2210-04", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/3 Unid. Evaporadora: 10 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "4 ventiladores con problemas en los evaporadores", "intervenciones": []}, {"sector": "Sala de proceso", "codigo": "TDA-SP-V-3212-05", "descripcion": "Unid. Condensadora: 3 compresor y 2 ventilador/2 Unid. Evaporadora: 12 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala de lavado", "codigo": "TDA-SL-V-2212-06", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/2 Unid. Evaporadora: 12 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "Con perdida de aceite y fuera de servicio", "intervenciones": []}, {"sector": "Sala de lavado y pasillo", "codigo": "TDA-SLPT-V-3212-07", "descripcion": "Unid. Condensadora: 3 compresor y 2 ventilador/3 Unid. Evaporadora: 12 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "Falta 2 compresores", "intervenciones": []}, {"sector": "Pasillo Tecnico", "codigo": "TDA-PT-V-228-08", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/2 Unid. Evaporadora: 8 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Controlador quemado, solo ventilador condensador funcionando.", "ultFecha": "18/9/2025", "estado": "Operativa", "observaciones": "Con fallas electricas, revisar", "intervenciones": [{"fecha": "18/9/2025", "desc": "se repara corto en controlador. Solo ventilador condensador funcionando. Controlador quemado.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": "solo queda funciondo ventilador de evaporador"}, {"fecha": "", "desc": "Cambio de controlador", "estado": "No iniciado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Camara 1", "codigo": "TDA-C1-V-324-09", "descripcion": "Unid. Condensadora: 3 compresor y 2 ventilador/2 Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Cambio de pressostato de condensador, se agrega gas R22.", "ultFecha": "20/10/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "20/10/2025", "desc": "Cambio de pressostato de condensador, se aumenta gas r22.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Camara 2", "codigo": "TDA-C2-V-324-10", "descripcion": "Unid. Condensadora: 3 compresor y 2 ventilador/2 Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Cambio de 3 compresores 6hp, filtro, reparacion pressostato condensador, carga gas.", "ultFecha": "20/10/2025", "estado": "Operativa", "observaciones": "funcionando al 68%, 1 compresor quemado", "intervenciones": [{"fecha": "20/10/2025", "desc": "Cambio 3 compresores 6hp, filtro, pressostato condensador, carga gas.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Camara 3 y 4", "codigo": "TDA-C3/4-V-338-11", "descripcion": "Unid. Condensadora: 3 compresor y 3 ventilador/2 Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Compresor 10hp quemado. Camara 3: 68%. Camara 4: controlador quemado.", "ultFecha": "20/10/2025", "estado": "Fuera de servicio", "observaciones": "controlador quemado, falla en compresor", "intervenciones": [{"fecha": "20/10/2025", "desc": "Compresor 10hp quemado. Camara 3: 68%. Camara 4: controlador quemado.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": "compresor quemado"}, {"fecha": "", "desc": "Cambio de compresor 10hp y controlador camara 4", "estado": "No iniciado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Camara 5", "codigo": "TDA-C5-V-223-12", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "17/1/2026", "estado": "Fuera de servicio", "observaciones": "", "intervenciones": []}, {"sector": "Camara 5", "codigo": "TDA-C5-V-223-13", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Evaporador desinstalado (caida de paneles del techo).", "ultFecha": "24/1/2026", "estado": "Fuera de servicio", "observaciones": "", "intervenciones": [{"fecha": "20/10/2025", "desc": "Reparacion fuga en condensador, carga gas R22.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Sala de lavado frutilla", "codigo": "TDA-SLF-V-224-14", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/2 Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala de lavado frutilla", "codigo": "TDA-SLF-V-324-15", "descripcion": "Unid. Condensadora: 3 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "Fallas electricas", "intervenciones": []}, {"sector": "Prefrio 1", "codigo": "TDA-PF1-C-123-(30000-250/290)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "PREVENTIVO, carga de gas, aceite y control de fugas.", "ultFecha": "25/8/2025", "estado": "Operativa", "observaciones": "Bajo nivel de aceite", "intervenciones": [{"fecha": "25/8/2025", "desc": "PREVENTIVO, carga de gas, aceite y control de fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Prefrio 1", "codigo": "TDA-PF1-C-123-(30000-250/289)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "PREVENTIVO, carga de gas, aceite y control de fugas.", "ultFecha": "25/8/2025", "estado": "Fuera de servicio", "observaciones": "Bajo nivel de aceite", "intervenciones": [{"fecha": "25/8/2025", "desc": "PREVENTIVO, carga de gas, aceite y control de fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}, {"fecha": "9/6/2025", "desc": "Cambio de ficha de deka.", "estado": "Finalizado", "orden": "-", "presupuesto": "$0", "obs": ""}]}, {"sector": "Prefrio 2", "codigo": "TDA-PF2-C-123-(30000-250/288)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Prefrio 2", "codigo": "TDA-PF2-C-123-(30000-250/287)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Tunel fresco 1", "codigo": "TDA-TF1-C-122-(30000-250/286)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "sonda de temperatura remplazar", "intervenciones": []}, {"sector": "Tunel fresco 1", "codigo": "TDA-TF1-C-122-(30000-250/284)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Tunel fresco 2", "codigo": "TDA-TF2-C-122-(30000-250/285)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "sonda de temperatura remplazar", "intervenciones": []}, {"sector": "Tunel fresco 2", "codigo": "TDA-TF2-C-122-(30000-250/283)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Camara congelado 2", "codigo": "TDA-CC2-C-111-(10000-100/267)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Camara congelado 2", "codigo": "TDA-CC2-C-111-(10000-100/268)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 1 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Camara congelado 1", "codigo": "TDA-CC1-C-122-(20000-200/136)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "Reemplazo ventilador condensador por uno de sala de envasado.", "ultFecha": "20/9/2025", "estado": "Operativa", "observaciones": "evaporador bloqueado con hielo.", "intervenciones": [{"fecha": "20/9/2025", "desc": "Reemplazo ventilador condensador.", "estado": "Finalizado", "orden": "-", "presupuesto": "$0", "obs": ""}, {"fecha": "25/8/2025", "desc": "REPARACION DE DESAGUE DE EVAPORADOR.", "estado": "Finalizado", "orden": "-", "presupuesto": "$0", "obs": ""}, {"fecha": "19/5/2025", "desc": "Cambio de resistencia calefactora para desague.", "estado": "Finalizado", "orden": "-", "presupuesto": "$0", "obs": ""}]}, {"sector": "Camara congelado 1", "codigo": "TDA-CC1-C-122-(20000-200/137)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Camara congelado 1", "codigo": "TDA-CC1-C-122-(20000-200/138)", "descripcion": "Unid. Condensadora: 1 compresor y 2 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "Compresor quemado reemplazado por compresor de Tunel 6.", "ultFecha": "18/12/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "5/1/2026", "desc": "Cambio guarda motor, contactor, presostato de baja, mangueras de refrigerante.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}, {"fecha": "18/12/2025", "desc": "Compresor quemado. Reemplazo por compresor de Tunel 6.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}, {"fecha": "31/10/2025", "desc": "Perdida refrigerante en evaporador. Reparacion fuga, carga 2 garrafas R404.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}, {"fecha": "25/8/2025", "desc": "REPARACION DE DESAGUE DE EVAPORADOR.", "estado": "Finalizado", "orden": "-", "presupuesto": "$0", "obs": ""}]}, {"sector": "Pasillo Tecnico camara", "codigo": "TDA-PTC-C-112-(10000-100/233)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala Envasado", "codigo": "TDA-SE-C-112-(10000-100/232)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala Envasado", "codigo": "TDA-SE-C-112-(10000-100/235)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala Envasado", "codigo": "TDA-SE-C-112-(10000-100/231)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "sin ventilador en unidad condensadora", "intervenciones": []}, {"sector": "Sala Envasado", "codigo": "TDA-SE-C-112-(10000-100/234)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "", "ultFecha": "", "estado": "Operativa", "observaciones": "", "intervenciones": []}, {"sector": "Sala Envasado", "codigo": "TDA-SE-C-112-(10000-100/230)", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "CAMBIO DE CONTACTOR DE COMPRESOR.", "ultFecha": "2/6/2025", "estado": "Operativa", "observaciones": "Falta de contactor en circuito del compresor", "intervenciones": [{"fecha": "2/6/2025", "desc": "CAMBIO DE CONTACTOR DE COMPRESOR.", "estado": "Finalizado", "orden": "-", "presupuesto": "$0", "obs": ""}]}, {"sector": "Tunel congelado 1", "codigo": "TDA-TC1-C-224-(40000-400/050)", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "PREVENTIVO, carga de gas, aceite y control de fugas.", "ultFecha": "25/8/2025", "estado": "Operativa", "observaciones": "Bajo rendimiento", "intervenciones": [{"fecha": "25/8/2025", "desc": "PREVENTIVO, carga de gas, aceite y control de fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel congelado 2", "codigo": "TDA-TC2-C-224-(40000-400/049)", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "PREVENTIVO. Microfuga detectada en evaporadora.", "ultFecha": "25/8/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "25/8/2025", "desc": "PREVENTIVO, carga gas, aceite, fugas. Microfuga en UE.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": "Bajo rendimiento, necesita 2 garrafas R404"}]}, {"sector": "Tunel congelado 3", "codigo": "TDA-TC3-C-224-(40000-400/048)", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "Fuga en valvula rotalok, se coloca pinche, vacio y carga 2 garrafas R404.", "ultFecha": "6/12/2025", "estado": "Operativa", "observaciones": "Bajo rendimiento por falta de gas y posible micro fuga", "intervenciones": [{"fecha": "6/12/2025", "desc": "Fuga rotalok. Pinche, vacio, 2 garrafas R404.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}, {"fecha": "16/10/2025", "desc": "Bajo rendimiento. 6 kg gas R404 agregados.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}, {"fecha": "25/8/2025", "desc": "PREVENTIVO, carga gas, aceite, fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel congelado 4", "codigo": "TDA-TC4-C-224-(40000-400/059)", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "PREVENTIVO, carga de gas, aceite y control de fugas.", "ultFecha": "25/8/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "25/8/2025", "desc": "PREVENTIVO, carga gas, aceite, fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel congelado 5", "codigo": "TDA-TC5-C-224-(40000-400/060)", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "PREVENTIVO, carga de gas, aceite y control de fugas.", "ultFecha": "25/8/2025", "estado": "Operativa", "observaciones": "", "intervenciones": [{"fecha": "25/8/2025", "desc": "PREVENTIVO, carga gas, aceite, fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel congelado 6", "codigo": "TDA-TC6-C-224-(40000-400/061)", "descripcion": "Unid. Condensadora: 2 compresor y 2 ventilador/Unid. Evaporadora: 4 ventiladores", "gas": "R404", "amp": "", "tipo": "COIRON", "ultMant": "Compresor extraido para colocar en Camara congelado 1.", "ultFecha": "18/12/2025", "estado": "Fuera de servicio", "observaciones": "sin compresor", "intervenciones": [{"fecha": "18/12/2025", "desc": "Compresor extraido para Camara congelado 1.", "estado": "Finalizado", "orden": "", "presupuesto": "", "obs": ""}, {"fecha": "25/8/2025", "desc": "PREVENTIVO, carga gas, aceite, fugas.", "estado": "Finalizado", "orden": "-", "presupuesto": "", "obs": ""}]}], "MARGESI - LAS MESADAS": [{"sector": "Camara de Pre frio", "codigo": "MARG-CPF-V-124-01", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Control con nitr\u00f3geno, carga R22, nivel aceite compresor, control gral.", "ultFecha": "11/7/2025", "estado": "Operativa", "observaciones": "Falta de gas y fugas, baja presion", "intervenciones": [{"fecha": "11/7/2025", "desc": "Fuga, control con nitrogeno, carga R22, aceite, control gral.", "estado": "Finalizado", "orden": "4995", "presupuesto": "$530", "obs": ""}]}, {"sector": "Camara de Pre frio", "codigo": "MARG-CPF-V-124-02", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Control con nitr\u00f3geno, carga R22, nivel aceite compresor, control gral.", "ultFecha": "11/7/2025", "estado": "Operativa", "observaciones": "Falta de gas y fugas, baja presion", "intervenciones": [{"fecha": "11/7/2025", "desc": "Fuga, control con nitrogeno, carga R22, aceite, control gral.", "estado": "Finalizado", "orden": "4995", "presupuesto": "$530", "obs": ""}]}, {"sector": "Sala de proceso", "codigo": "MARG-SP-V-129-03", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Control nitrogeno, carga R22, reparar paleta ventilador UC, aceite, control gral.", "ultFecha": "11/7/2025", "estado": "Operativa", "observaciones": "Falta de gas y fugas, baja presion", "intervenciones": [{"fecha": "11/7/2025", "desc": "Control nitrogeno, carga R22, paleta ventilador, aceite, control gral.", "estado": "Finalizado", "orden": "4995", "presupuesto": "$655", "obs": ""}]}, {"sector": "Sala de proceso", "codigo": "MARG-SP-V-129-04", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Control nitrogeno, carga R22, aceite, control gral.", "ultFecha": "11/7/2025", "estado": "Operativa", "observaciones": "Falta de gas y fugas, baja presion", "intervenciones": [{"fecha": "11/7/2025", "desc": "Control nitrogeno, carga R22, aceite, control gral.", "estado": "Finalizado", "orden": "4995", "presupuesto": "$530", "obs": ""}]}, {"sector": "Tunel 1", "codigo": "MARG-T1-V-123-05", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Compresor 20hp quemado.", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "Compresor roto, 20 hp", "intervenciones": [{"fecha": "", "desc": "Compresor 20hp quemado. Requiere reemplazo.", "estado": "No iniciado", "orden": "", "presupuesto": "", "obs": ""}]}, {"sector": "Tunel 2", "codigo": "MARG-T2-V-123-06", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Carga de gas.", "ultFecha": "11/7/2025", "estado": "Operativa", "observaciones": "Falta de gas y fugas, baja presion", "intervenciones": [{"fecha": "11/7/2025", "desc": "Carga de gas R22.", "estado": "Finalizado", "orden": "4995", "presupuesto": "$213", "obs": ""}]}, {"sector": "Sala de mantenimiento", "codigo": "MARG-SM-V-124-07", "descripcion": "Unid. Condensadora: 1 compresor y 1 ventilador/Unid. Evaporadora: 2 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "Control nitrogeno, carga R22, aceite, control gral. (seguridad y proteccion)", "ultFecha": "11/7/2025", "estado": "Operativa", "observaciones": "Falta de gas y fugas, baja presion", "intervenciones": [{"fecha": "11/7/2025", "desc": "Control nitrogeno, carga R22, aceite, control gral.", "estado": "Finalizado", "orden": "4995", "presupuesto": "$783", "obs": ""}]}], "TDB": [{"sector": "Camara de mantenimiento", "codigo": "TDB-CM-V-343-01", "descripcion": "Unid. Condensadora: 3 compresor y 4 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "", "intervenciones": []}, {"sector": "Camara de mantenimiento", "codigo": "TDB-CM-V-343-02", "descripcion": "Unid. Condensadora: 3 compresor y 4 ventilador/Unid. Evaporadora: 3 ventiladores", "gas": "R22", "amp": "", "tipo": "EQ VIEJO", "ultMant": "", "ultFecha": "", "estado": "Fuera de servicio", "observaciones": "", "intervenciones": []}]};
+
+const SMAP={EDT:'EDT','TDA - EMPAQUE':'tda','MARGESI - LAS MESADAS':'marg',TDB:'tdb'};
+const DOT_C={Operativa:'dok','Fuera de servicio':'ddanger'};
+const BADGE_C={Operativa:'bok','Fuera de servicio':'bdanger'};
+const BAD_INT={Finalizado:'bok','No iniciado':'bwarn','En proceso':'bproc'};
+
+function estDot(e){return DOT_C[e]||'dnone'}
+function estBadge(e){return BADGE_C[e]||'bnone'}
+
+function eHTML(eq,uid,idx){
+  const c=eq.tipo==='COIRON';
+  return `<div class="erow" onclick="openModal('${uid}',${idx})">
+    <div class="edot ${estDot(eq.estado)}"></div>
+    <div class="einfo">
+      <div class="en">${eq.sector}</div>
+      <div class="ec">${eq.codigo}</div>
+      <div class="ed">${eq.descripcion}</div>
+    </div>
+    <div class="emeta">
+      <span class="badge ${c?'bc':'bv'}">${eq.tipo}</span>
+      <span class="badge ${estBadge(eq.estado)}">${eq.estado}</span>
+      <span class="ef">${eq.ultFecha||'—'}</span>
+    </div>
+  </div>`;
+}
+
+function renderList(containerId, eqs, uid){
+  const coiron=eqs.filter(e=>e.tipo==='COIRON');
+  const viejo=eqs.filter(e=>e.tipo!=='COIRON');
+  let html='';
+  if(coiron.length){
+    html+=`<div class="sec-lbl"><i class="ti ti-stars" aria-hidden="true" style="font-size:12px;margin-right:4px"></i>Equipos COIRON (${coiron.length})</div>`;
+    html+=coiron.map((e,i)=>eHTML(e,uid,eqs.indexOf(e))).join('');
+  }
+  if(viejo.length){
+    html+=`<div class="sec-lbl"><i class="ti ti-clock-hour-3" aria-hidden="true" style="font-size:12px;margin-right:4px"></i>Equipos Viejos (${viejo.length})</div>`;
+    html+=viejo.map((e,i)=>eHTML(e,uid,eqs.indexOf(e))).join('');
+  }
+  document.getElementById(containerId).innerHTML=html;
+}
+
+const UN={edt:'EDT',tda:'TDA - EMPAQUE',marg:'MARGESI - LAS MESADAS',tdb:'TDB'};
+
+function filtrar(uid,q){
+  const all=DB[UN[uid]];
+  const f=q?all.filter(e=>e.sector.toLowerCase().includes(q.toLowerCase())||e.codigo.toLowerCase().includes(q.toLowerCase())||e.descripcion.toLowerCase().includes(q.toLowerCase())):all;
+  renderList('list-'+uid,f,uid);
+}
+
+function openModal(uid,idx){
+  const eq=DB[UN[uid]][idx];
+  const c=eq.tipo==='COIRON';
+  const totalInt=eq.intervenciones.length;
+  const presups=eq.intervenciones.filter(i=>i.presupuesto&&i.presupuesto!=='$0'&&i.presupuesto!='').map(i=>i.presupuesto);
+  const intHTML=eq.intervenciones.length
+    ?eq.intervenciones.map(i=>`<div class="int-row">
+      <div class="idate"><div class="idatelabel">${i.fecha||'Pendiente'}</div><div class="itype"><span class="badge ${BAD_INT[i.estado]||'bnone'}">${i.estado}</span></div></div>
+      <div class="idesc">${i.desc}${i.obs?`<br><span style="font-size:10px;color:var(--color-text-tertiary)">Obs: ${i.obs}</span>`:''}${i.orden&&i.orden!=='-'?`<br><span style="font-size:10px;color:var(--color-text-tertiary)">Orden: ${i.orden}</span>`:''}</div>
+      <div class="iright">${i.presupuesto&&i.presupuesto!=='$0'&&i.presupuesto?`<span style="color:#1a6fcf">${i.presupuesto}</span>`:'—'}</div>
+    </div>`).join('')
+    :'<div style="padding:12px 0;font-size:12px;color:var(--color-text-tertiary)">Sin intervenciones registradas.</div>';
+
+  document.getElementById('modalContent').innerHTML=`
+    <div class="mhero">
+      <button class="mclosebtn" onclick="closeModal()">Cerrar</button>
+      <div class="mtype">${UN[uid]} · ${eq.tipo}</div>
+      <div class="mname">${eq.sector}</div>
+      <div class="mcode">${eq.codigo}</div>
+    </div>
+    <div class="mbody">
+      <div class="specs">
+        <div class="spec"><div class="sl">Gas</div><div class="sv">${eq.gas||'—'}</div></div>
+        <div class="spec"><div class="sl">Estado</div><div class="sv"><span class="badge ${estBadge(eq.estado)}">${eq.estado}</span></div></div>
+        <div class="spec"><div class="sl">Últ. fecha</div><div class="sv">${eq.ultFecha||'Sin registro'}</div></div>
+        <div class="spec"><div class="sl">Tipo</div><div class="sv"><span class="badge ${c?'bc':'bv'}">${eq.tipo}</span></div></div>
+        <div class="spec"><div class="sl">Intervenciones</div><div class="sv">${totalInt}</div></div>
+        <div class="spec"><div class="sl">Presupuesto</div><div class="sv">${presups.length?presups.join(', '):'No registrado'}</div></div>
+      </div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin-bottom:4px">Descripción técnica</div>
+      <div class="obs-box">${eq.descripcion}</div>
+      ${eq.observaciones?`<div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin:8px 0 4px">Observaciones actuales</div><div class="obs-box" style="border-left:3px solid #e74c3c;background:var(--color-background-danger,#fff5f5)">${eq.observaciones}</div>`:''}
+      ${eq.ultMant?`<div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin:8px 0 4px">Último trabajo realizado</div><div class="obs-box">${eq.ultMant}</div>`:''}
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin:10px 0 4px;display:flex;justify-content:space-between">
+        <span><i class="ti ti-history" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Historial de intervenciones</span>
+        <span style="font-weight:400">Fecha · Descripción · Costo</span>
+      </div>
+      <div>${intHTML}</div>
+    </div>`;
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modalBg'))
+    document.getElementById('modalBg').classList.remove('open');
+}
+
+function showPane(id,tab){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  tab.classList.add('on');
+}
+
+function buildResumen(){
+  // Pending list
+  let pending=[];
+  Object.entries(DB).forEach(([un,eqs])=>{
+    eqs.forEach(eq=>{
+      eq.intervenciones.forEach(i=>{
+        if(i.estado==='No iniciado'){
+          pending.push({un,sector:eq.sector,codigo:eq.codigo,desc:i.desc});
+        }
+      });
+    });
+  });
+  document.getElementById('pending-list').innerHTML=pending.map(p=>`
+    <div class="alert-row">
+      <div class="atag"><span class="badge bdanger">${p.un.replace('MARGESI - LAS MESADAS','MARG').replace('TDA - EMPAQUE','TDA')}</span></div>
+      <div class="adesc">
+        <div class="an">${p.sector} <span style="font-size:10px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${p.codigo}</span></div>
+        <div class="as">${p.desc}</div>
+      </div>
+      <div style="flex-shrink:0"><span class="no-init-tag">No iniciado</span></div>
+    </div>`).join('');
+
+  // Sin registro
+  let sinreg=[];
+  Object.entries(DB).forEach(([un,eqs])=>{
+    eqs.filter(e=>!e.ultFecha&&!e.intervenciones.length).forEach(e=>{
+      sinreg.push({un,sector:e.sector,codigo:e.codigo,obs:e.observaciones});
+    });
+  });
+  document.getElementById('sinreg-list').innerHTML=sinreg.map(s=>`
+    <div class="alert-row">
+      <div class="atag"><span class="badge bnone">${s.un.replace('MARGESI - LAS MESADAS','MARG').replace('TDA - EMPAQUE','TDA')}</span></div>
+      <div class="adesc">
+        <div class="an">${s.sector} <span style="font-size:10px;color:var(--color-text-tertiary);font-family:var(--font-mono)">${s.codigo}</span></div>
+        ${s.obs?`<div class="as">${s.obs}</div>`:'<div class="as" style="color:var(--color-text-tertiary)">Sin observaciones</div>'}
+      </div>
+    </div>`).join('');
+}
+
+let charts={};
+function initCharts(){
+  const d=(id)=>document.getElementById(id);
+  if(charts.cUnidad)Object.values(charts).forEach(c=>c.destroy());
+
+  charts.cUnidad=new Chart(d('cUnidad'),{type:'bar',
+    data:{labels:['EDT','TDA','Margesi','TDB'],
+    datasets:[{label:'COIRON',data:[22,25,0,0],backgroundColor:'#185FA5',borderRadius:3},
+              {label:'Viejos',data:[4,15,7,2],backgroundColor:'#EF9F27',borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.1)'},ticks:{stepSize:5,font:{size:10}}}}}});
+
+  charts.cEstado=new Chart(d('cEstado'),{type:'doughnut',
+    data:{labels:['Operativa (59)','Fuera servicio (16)'],
+    datasets:[{data:[59,16],backgroundColor:['#27ae60','#e74c3c'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}});
+
+  charts.cMeses=new Chart(d('cMeses'),{type:'bar',
+    data:{labels:['May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26'],
+    datasets:[{label:'Intervenciones',data:[1,1,7,17,3,7,0,3,1],backgroundColor:'#185FA5',borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:35}},
+        y:{grid:{color:'rgba(128,128,128,.1)'},ticks:{stepSize:2,font:{size:10}}}}}});
+
+  charts.cPresup=new Chart(d('cPresup'),{type:'bar',
+    data:{labels:['MARG-CPF-01','MARG-CPF-02','MARG-SP-03','MARG-SP-04','MARG-T2-06','MARG-SM-07','EDT-CA1-01','EDT-CP-02','EDT-CPF-03','EDT-CPF-04'],
+    datasets:[{label:'USD',data:[530,530,655,530,213,783,1310,630,175,175],backgroundColor:'#1D9E75',borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:9},maxRotation:40}},
+        y:{grid:{color:'rgba(128,128,128,.1)'},ticks:{callback:v=>'$'+v,font:{size:10}}}}}});
+}
+
+// Init
+renderList('list-edt',DB['EDT'],'edt');
+renderList('list-tda',DB['TDA - EMPAQUE'],'tda');
+renderList('list-marg',DB['MARGESI - LAS MESADAS'],'marg');
+renderList('list-tdb',DB['TDB'],'tdb');
+buildResumen();
+setTimeout(initCharts,300);
+</script>
+
