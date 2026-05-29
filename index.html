@@ -4,126 +4,121 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>GMP · Tablero de Mantenimiento de Frío</title>
-  <!-- Tabler Icons + Chart.js -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <!-- PapaParse para leer CSV fácilmente -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     :root {
-      --color-background-primary: #ffffff;
-      --color-background-secondary: #f8f9fa;
-      --color-background-tertiary: #f1f3f5;
-      --color-text-primary: #1e293b;
-      --color-text-secondary: #475569;
-      --color-text-tertiary: #64748b;
-      --color-border-primary: #e2e8f0;
-      --color-border-secondary: #cbd5e1;
-      --color-border-tertiary: #e9ecef;
-      --border-radius-md: 8px;
-      --border-radius-lg: 12px;
-      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      --font-mono: 'SF Mono', 'Cascadia Code', monospace;
+      --color-bg-page: #f0f2f5;
+      --color-bg-card: #ffffff;
+      --color-text-primary: #1e2a3a;
+      --color-text-secondary: #4a5568;
+      --color-text-muted: #718096;
+      --color-border: #e2e8f0;
+      --color-border-strong: #cbd5e0;
+      --color-ok: #2c7a4d;
+      --color-danger: #c53030;
+      --color-warning: #c05621;
+      --color-coiron: #2b6cb0;
+      --color-viejo: #9c4221;
+      --color-accent: #3182ce;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'SF Mono', monospace;
     }
-    
+
     @media (prefers-color-scheme: dark) {
       :root {
-        --color-background-primary: #0f172a;
-        --color-background-secondary: #1e293b;
-        --color-background-tertiary: #0f172a;
+        --color-bg-page: #0f172a;
+        --color-bg-card: #1e293b;
         --color-text-primary: #f1f5f9;
         --color-text-secondary: #cbd5e1;
-        --color-text-tertiary: #94a3b8;
-        --color-border-primary: #334155;
-        --color-border-secondary: #475569;
-        --color-border-tertiary: #1e293b;
+        --color-text-muted: #94a3b8;
+        --color-border: #334155;
+        --color-border-strong: #475569;
       }
     }
-    
+
     body {
       font-family: var(--font-sans);
-      background: var(--color-background-tertiary);
+      background: var(--color-bg-page);
       color: var(--color-text-primary);
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.4;
     }
-    
-    .shell {
-      display: grid;
-      grid-template-rows: auto auto 1fr;
+
+    /* Layout */
+    .app {
+      display: flex;
+      flex-direction: column;
       height: 100vh;
       overflow: hidden;
     }
-    
-    .topbar {
+
+    /* Header */
+    .header {
       background: #0c2340;
       color: white;
-      padding: 12px 20px;
+      padding: 12px 24px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      gap: 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .topbar-icon {
-      width: 38px;
-      height: 38px;
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 40px; height: 40px;
       background: rgba(55,138,221,0.2);
-      border: 1px solid rgba(55,138,221,0.5);
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .topbar-icon i { font-size: 22px; color: #85b7eb; }
-    .topbar-title { font-size: 16px; font-weight: 500; letter-spacing: -0.2px; }
-    .topbar-sub { font-size: 11px; opacity: 0.55; margin-top: 2px; }
-    .topbar-right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+    .logo-icon i { font-size: 24px; color: #85b7eb; }
+    .title h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.2px; }
+    .title p { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+    .header-actions { margin-left: auto; display: flex; gap: 12px; align-items: center; }
     .live-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       background: rgba(29,158,117,0.15);
       border: 1px solid rgba(29,158,117,0.4);
       border-radius: 30px;
       padding: 4px 12px;
       font-size: 12px;
-      color: #5dcaa5;
-    }
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background: #5dcaa5;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .refresh-btn {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      border-radius: 30px;
-      padding: 5px 12px;
-      color: white;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
       display: flex;
       align-items: center;
       gap: 6px;
+      color: #5dcaa5;
     }
-    .refresh-btn:hover { background: rgba(255,255,255,0.2); }
-    
-    .nav {
+    .live-dot { width: 8px; height: 8px; background: #5dcaa5; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .btn-refresh {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 30px;
+      padding: 5px 14px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
       display: flex;
-      background: var(--color-background-primary);
-      border-bottom: 1px solid var(--color-border-tertiary);
-      padding: 0 20px;
+      align-items: center;
       gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-refresh:hover { background: rgba(255,255,255,0.2); }
+
+    /* Navegación por pestañas */
+    .tabs {
+      display: flex;
+      background: var(--color-bg-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 20px;
+      gap: 4px;
       overflow-x: auto;
     }
-    .ntab {
-      padding: 11px 18px;
+    .tab {
+      padding: 12px 20px;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
@@ -134,261 +129,266 @@
       align-items: center;
       gap: 8px;
     }
-    .ntab:hover { color: var(--color-text-primary); }
-    .ntab.on { color: #1a73e8; border-bottom-color: #1a73e8; }
-    .ntab .count {
-      font-size: 11px;
-      background: var(--color-background-secondary);
+    .tab i { font-size: 16px; }
+    .tab.active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+    .tab .badge {
+      background: var(--color-bg-page);
+      padding: 2px 8px;
       border-radius: 30px;
-      padding: 1px 8px;
+      font-size: 11px;
     }
-    .ntab.on .count { background: #e8f0fe; color: #0c447c; }
-    
-    .content { overflow-y: auto; padding: 20px; }
+    .tab.active .badge { background: #e8f0fe; color: #0c447c; }
+
+    /* Contenido principal */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
     .pane { display: none; }
-    .pane.on { display: block; }
-    
-    .kgrid {
+    .pane.active { display: block; }
+
+    /* Tarjetas KPI */
+    .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
     }
-    .kcard {
-      background: var(--color-background-primary);
-      border: 1px solid var(--color-border-tertiary);
-      border-radius: var(--border-radius-lg);
+    .kpi-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
       padding: 16px;
       transition: 0.1s;
     }
-    .kcard.accent-blue { border-top: 3px solid #185fa5; }
-    .kcard.accent-green { border-top: 3px solid #639922; }
-    .kcard.accent-amber { border-top: 3px solid #ef9f27; }
-    .kcard.accent-red { border-top: 3px solid #e24b4a; }
-    .kcard.accent-teal { border-top: 3px solid #1d9e75; }
-    .klabel {
-      font-size: 10px;
+    .kpi-card.accent-blue { border-top: 3px solid #2b6cb0; }
+    .kpi-card.accent-green { border-top: 3px solid #2c7a4d; }
+    .kpi-card.accent-red { border-top: 3px solid #c53030; }
+    .kpi-card.accent-amber { border-top: 3px solid #c05621; }
+    .kpi-label {
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: var(--color-text-tertiary);
-      font-weight: 600;
+      color: var(--color-text-muted);
       margin-bottom: 8px;
     }
-    .kval {
+    .kpi-value {
       font-size: 28px;
       font-weight: 600;
       line-height: 1.2;
-      color: var(--color-text-primary);
     }
-    .kval .unit { font-size: 14px; font-weight: 400; color: var(--color-text-secondary); }
-    .ksub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 6px; }
-    
-    .row2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
-    .panel {
-      background: var(--color-background-primary);
-      border: 1px solid var(--color-border-tertiary);
-      border-radius: var(--border-radius-lg);
-      overflow: hidden;
+    .kpi-unit { font-size: 14px; font-weight: normal; color: var(--color-text-muted); }
+    .kpi-sub { font-size: 11px; color: var(--color-text-muted); margin-top: 6px; }
+
+    /* Tablas profesionales */
+    .table-wrapper {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      overflow-x: auto;
     }
-    .ph {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--color-border-tertiary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--color-text-secondary);
-    }
-    .chart-box { padding: 14px; height: 220px; position: relative; }
-    .legend-row { display: flex; gap: 16px; padding: 0 16px 12px; font-size: 11px; }
-    .ld { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: middle; }
-    
-    .search-wrap { padding: 12px 16px; border-bottom: 1px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
-    .sinput {
+    table {
       width: 100%;
-      border: 1px solid var(--color-border-secondary);
-      border-radius: 30px;
-      padding: 9px 12px 9px 34px;
+      border-collapse: collapse;
       font-size: 13px;
-      background: var(--color-background-primary);
-      color: var(--color-text-primary);
     }
-    .search-icon-wrap { position: relative; }
-    .search-icon-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); }
-    
-    .sec-hdr {
-      padding: 8px 16px;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      background: var(--color-background-secondary);
-      border-bottom: 1px solid var(--color-border-tertiary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .erow {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 12px;
-      align-items: start;
+    th {
+      text-align: left;
       padding: 12px 16px;
-      border-bottom: 1px solid var(--color-border-tertiary);
-      cursor: pointer;
-      transition: background 0.1s;
+      background: var(--color-bg-card);
+      border-bottom: 1px solid var(--color-border);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
     }
-    .erow:hover { background: var(--color-background-secondary); }
-    .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; }
-    .d-ok { background: #639922; box-shadow: 0 0 0 2px #63992220; }
-    .d-danger { background: #e24b4a; }
-    .d-warn { background: #ef9f27; }
-    .d-none { background: #888780; }
-    .einfo { flex: 1; min-width: 0; }
-    .en { font-weight: 600; font-size: 13px; }
-    .ec { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
-    .ed { font-size: 11px; color: var(--color-text-secondary); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .emeta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .badge {
-      font-size: 10px;
-      padding: 2px 8px;
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    tr:hover td { background: var(--color-bg-page); }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
       border-radius: 30px;
+      font-size: 11px;
       font-weight: 500;
       white-space: nowrap;
     }
-    .b-coiron { background: #e8f0fe; color: #0c447c; }
-    .b-viejo { background: #faedea; color: #7b2e1a; }
-    .b-ok { background: #e6f4ea; color: #0e6c2e; }
-    .b-danger { background: #fce8e6; color: #b3261e; }
-    .b-warn { background: #fef7e0; color: #b45f06; }
-    .b-proc { background: #e0f2fe; color: #075985; }
-    .b-none { background: var(--color-background-secondary); color: var(--color-text-secondary); }
-    .etime { font-size: 10px; color: var(--color-text-tertiary); }
-    
-    .alert-row {
+    .status-operativa { background: #e6f4ea; color: #2c7a4d; }
+    .status-fuera { background: #fce8e6; color: #c53030; }
+    .type-badge {
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .type-coiron { background: #e8f0fe; color: #2b6cb0; }
+    .type-viejo { background: #faedea; color: #9c4221; }
+    .clickable-row { cursor: pointer; }
+    .search-box {
+      margin-bottom: 20px;
       display: flex;
       gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--color-border);
+      border-radius: 30px;
+      background: var(--color-bg-card);
+      color: var(--color-text-primary);
+      font-size: 13px;
+    }
+    .search-icon { position: relative; }
+    .search-icon i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); }
+
+    /* Alertas */
+    .alert-section {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .alert-header {
       padding: 12px 16px;
-      border-bottom: 1px solid var(--color-border-tertiary);
+      background: var(--color-bg-card);
+      border-bottom: 1px solid var(--color-border);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .alert-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      gap: 12px;
       align-items: flex-start;
     }
-    .adesc { flex: 1; min-width: 0; }
-    .an { font-weight: 500; font-size: 13px; }
-    .as, .acode { font-size: 11px; color: var(--color-text-tertiary); }
-    
-    .modal-bg {
+    .alert-item:last-child { border-bottom: none; }
+    .alert-tag { font-size: 11px; font-weight: 500; min-width: 70px; }
+    .alert-desc { flex: 1; }
+    .alert-title { font-weight: 500; }
+    .alert-code { font-family: monospace; font-size: 11px; color: var(--color-text-muted); }
+
+    /* Modal */
+    .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.6);
-      z-index: 200;
-      align-items: flex-start;
+      z-index: 1000;
+      align-items: center;
       justify-content: center;
-      padding: 30px 16px;
+      padding: 20px;
     }
-    .modal-bg.open { display: flex; }
-    .modal {
-      background: var(--color-background-primary);
-      border-radius: var(--border-radius-lg);
+    .modal-overlay.active { display: flex; }
+    .modal-container {
+      background: var(--color-bg-card);
+      border-radius: 16px;
+      max-width: 800px;
       width: 100%;
-      max-width: 680px;
       max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      overflow-y: auto;
       box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
     }
-    .mhero {
+    .modal-header {
       background: #0c2340;
       color: white;
-      padding: 18px 20px;
-      position: relative;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
     }
-    .mclose {
-      position: absolute;
-      top: 14px;
-      right: 16px;
+    .modal-close {
+      float: right;
       background: rgba(255,255,255,0.1);
       border: none;
       border-radius: 8px;
       padding: 4px 12px;
       color: white;
       cursor: pointer;
-      font-size: 12px;
     }
-    .mbody { padding: 20px; overflow-y: auto; }
-    .specs-grid {
+    .modal-body { padding: 20px; }
+    .detail-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 20px;
     }
-    .spec { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px; }
-    .sl { font-size: 10px; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 4px; }
-    .sv { font-weight: 500; font-size: 13px; }
-    .int-row {
+    .detail-item {
+      background: var(--color-bg-page);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .detail-label { font-size: 10px; text-transform: uppercase; color: var(--color-text-muted); }
+    .detail-value { font-weight: 500; margin-top: 4px; }
+    .interv-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--color-border-tertiary);
     }
-    .idate { min-width: 85px; }
-    .idesc { flex: 1; font-size: 12px; }
-    .icost { font-weight: 500; color: #1a73e8; }
-    .obs-box {
-      background: var(--color-background-secondary);
-      border-radius: var(--border-radius-md);
-      padding: 10px 12px;
-      font-size: 12px;
-      margin-bottom: 12px;
-    }
-    .obs-alert { border-left: 3px solid #e24b4a; background: #fce8e6; }
-    .empty { padding: 32px; text-align: center; color: var(--color-text-tertiary); font-style: italic; }
-    .loading-overlay {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px;
-      background: var(--color-background-tertiary);
-      border-radius: var(--border-radius-lg);
-    }
-    .spinner { width: 32px; height: 32px; border: 3px solid rgba(0,0,0,0.1); border-top-color: #1a73e8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .interv-date { min-width: 90px; font-size: 12px; }
+    .interv-desc { flex: 1; font-size: 12px; }
+    .interv-cost { font-weight: 500; color: var(--color-accent); }
+    .empty-state { padding: 40px; text-align: center; color: var(--color-text-muted); }
+    .spinner { width: 30px; height: 30px; border: 3px solid rgba(0,0,0,0.1); border-top-color: var(--color-accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 20px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 20px; }
-    .stat-cell { background: var(--color-background-primary); padding: 14px; text-align: center; }
-    .progress-bar-wrap { height: 4px; background: var(--color-background-secondary); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-    .progress-bar { height: 4px; background: #185fa5; width: 0%; }
+
+    @media (max-width: 768px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
-<div class="shell">
-  <div class="topbar">
-    <div class="topbar-icon"><i class="ti ti-snowflake"></i></div>
-    <div><div class="topbar-title">GMP · Gestión de Mantenimiento Industrial</div><div class="topbar-sub">Equipos de frío — datos desde CSV (local o publicados)</div></div>
-    <div class="topbar-right">
+<div class="app">
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="ti ti-snowflake"></i></div>
+      <div class="title">
+        <h1>GMP · Gestión de Mantenimiento de Frío</h1>
+        <p>Equipos industriales · Datos en tiempo real</p>
+      </div>
+    </div>
+    <div class="header-actions">
       <div class="live-badge"><span class="live-dot"></span><span id="lastUpdate">Cargando...</span></div>
-      <button class="refresh-btn" id="refreshBtn"><i class="ti ti-refresh"></i> Actualizar</button>
+      <button class="btn-refresh" id="refreshBtn"><i class="ti ti-refresh"></i> Actualizar</button>
     </div>
   </div>
-  <div class="nav" id="navTabs"></div>
-  <div class="content" id="mainContent"><div class="loading-overlay"><div class="spinner"></div><span style="margin-left:12px">Cargando datos...</span></div></div>
+  <div class="tabs" id="tabsContainer"></div>
+  <div class="main" id="mainContent">
+    <div class="spinner"></div>
+  </div>
 </div>
-<div class="modal-bg" id="modalBg" onclick="closeModal(event)"><div class="modal" id="modalContent"></div></div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-container" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()">✕ Cerrar</button>
+      <div id="modalTitle"></div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
 
 <script>
-  // ============================================================
-  // CONFIGURACIÓN DE FUENTES DE DATOS (CSV)
-  // Si quieres datos EN VIVO desde Google Sheets:
-  // 1. Publica las hojas "Registro AA" y "Mantenimiento AA" como CSV
-  //    (Archivo → Compartir → Publicar en la web → CSV)
-  // 2. Copia las URLs y pégalas aquí.
-  // 3. Si dejas las URLs vacías, se usarán los datos incrustados (los que extraje de tus archivos).
-  // ============================================================
-  const CSV_REGISTRO_URL = "";   // Ej: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+  // ================= CONFIGURACIÓN =================
+  // Si quieres datos en vivo desde Google Sheets (publicados como CSV):
+  // const CSV_REGISTRO_URL = "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv";
+  // const CSV_MANTENIMIENTO_URL = "...";
+  // Deja vacío para usar datos incrustados.
+  const CSV_REGISTRO_URL = "";
   const CSV_MANTENIMIENTO_URL = "";
 
-  // ----------------- DATOS INCRUSTADOS (extraídos de los CSV que me diste) -----------------
+  // Datos incrustados (extraídos de los CSV originales)
   const EMBEDDED_REGISTRO = `Sector,Codigo de equipo,Agricola,Descripcion,Gas,In (A),COIRON o Eq Viejo,Ultimo Mantenimiento,Ult fecha de mant,Estado Actual,Observaciones
 Camara de almacenamiento 1 y 2,EDT-CA1-V-433-01,EDT,"Unid. Condesodora: 4 compresores y 3 ventiladores/2 Unid. Evaporadora: 6 ventiladores ",R22,,EQ VIEJO,"Se realiza carga de gas y control de fuga, se repara el colector soldando por una gran perdida que se tenia (se gestiona la compra de un colector nuevo), contro de aceite en compresores",10/9/2025,Fuera de servicio,equipo sin gas
 Sala de proceso,EDT-CP-V-3340-02,EDT,"Unid. Condesadora: 3 compresores y 3 ventiladores/8 Unid. Evaporadora: cada una con 5 ventiladores ",R22,,EQ VIEJO,"Se realiza carga de gas y control de fugas, se cambio 4 forzadores quemados y 6 capacitores, se realizo cambio y control de aceite en los compresores, se coloco un ciclador proveniente de TDA",10/9/2025,Fuera de servicio,fuga de gas valvula rotalok.( remplazar 1 o 2 valvulas )
@@ -517,17 +517,15 @@ TDA-C3/4-V-338-11,TDA - EMPAQUE,,,Cambio de un compresor de 10 hp y cambio de co
 TDA-PT-V-228-08,TDA - EMPAQUE,,,Cambio de controlador ,,,No iniciado,
 EDT-CA1-V-433-01,EDT,,,Cambio de colector en reemplazo del reparado,,,No iniciado,"Estamos a la espera de que molina haga las modificaciones necesarias para poder colocarlo"`;
 
-  // ========== LÓGICA PRINCIPAL ==========
+  // Estado global
   let fullData = null;
-  let charts = {};
-  let refreshInterval = null;
+  let currentUnit = "resumen";
 
   async function cargarDatos() {
-    document.getElementById('mainContent').innerHTML = `<div class="loading-overlay"><div class="spinner"></div><span style="margin-left:12px">Cargando datos desde CSV...</span></div>`;
+    document.getElementById('mainContent').innerHTML = `<div class="spinner"></div>`;
     try {
       let registroCSV = EMBEDDED_REGISTRO;
       let mantenimientoCSV = EMBEDDED_MANTENIMIENTO;
-
       if (CSV_REGISTRO_URL && CSV_MANTENIMIENTO_URL) {
         const [regResp, manResp] = await Promise.all([
           fetch(CSV_REGISTRO_URL).then(r => r.text()),
@@ -536,13 +534,10 @@ EDT-CA1-V-433-01,EDT,,,Cambio de colector en reemplazo del reparado,,,No iniciad
         registroCSV = regResp;
         mantenimientoCSV = manResp;
       }
-
       const registros = Papa.parse(registroCSV, { header: true, skipEmptyLines: true }).data;
       const mantenimientos = Papa.parse(mantenimientoCSV, { header: true, skipEmptyLines: true }).data;
 
       const equiposMap = new Map();
-
-      // Procesar registro de equipos
       for (const row of registros) {
         const codigo = (row['Codigo de equipo'] || '').trim();
         if (!codigo) continue;
@@ -552,288 +547,170 @@ EDT-CA1-V-433-01,EDT,,,Cambio de colector en reemplazo del reparado,,,No iniciad
         else if (unidad.includes('MARGESI')) unidad = 'MARGESI';
         else if (unidad.includes('TDB')) unidad = 'TDB';
         else unidad = 'OTROS';
-
         const tipo = (row['COIRON o Eq Viejo'] || '').trim() === 'COIRON' ? 'COIRON' : 'EQ VIEJO';
         const estado = (row['Estado Actual'] || '').trim();
         const ultFecha = row['Ult fecha de mant'] ? formatearFecha(row['Ult fecha de mant']) : '';
-
         equiposMap.set(codigo, {
-          codigo: codigo,
-          sector: (row['Sector'] || '').trim(),
+          codigo, sector: (row['Sector'] || '').trim(),
           descripcion: (row['Descripcion'] || '').trim(),
           gas: (row['Gas'] || '').trim(),
-          tipo: tipo,
-          estado: estado,
-          ultFecha: ultFecha,
+          tipo, estado, ultFecha,
           observaciones: (row['Observaciones'] || '').trim(),
-          unidad: unidad,
-          intervenciones: []
+          unidad, intervenciones: []
         });
       }
-
-      // Procesar mantenimientos
       for (const row of mantenimientos) {
         const codigo = (row['Codigo de equipo'] || '').trim();
         if (!codigo || !equiposMap.has(codigo)) continue;
         const fecha = row['Fecha del mant'] ? formatearFecha(row['Fecha del mant']) : '';
-        const estadoTrabajo = (row['Estado del trabajo'] || '').trim();
         let presupuesto = row['Presupuesto USD'] || '';
         if (presupuesto && !isNaN(parseFloat(presupuesto))) presupuesto = `$${parseFloat(presupuesto).toLocaleString()}`;
         equiposMap.get(codigo).intervenciones.push({
-          fecha: fecha,
-          desc: (row['Descripcion del Mantenimiento'] || '').trim(),
-          estado: estadoTrabajo,
+          fecha, desc: (row['Descripcion del Mantenimiento'] || '').trim(),
+          estado: (row['Estado del trabajo'] || '').trim(),
           orden: (row['N°: Recep/Orden de compra'] || '').trim(),
-          presupuesto: presupuesto,
-          obs: (row['Observaciones'] || '').trim()
+          presupuesto, obs: (row['Observaciones'] || '').trim()
         });
       }
-
-      // Ordenar intervenciones por fecha descendente
       for (let eq of equiposMap.values()) {
-        eq.intervenciones.sort((a,b) => {
-          if (!a.fecha) return 1;
-          if (!b.fecha) return -1;
-          return new Date(b.fecha) - new Date(a.fecha);
-        });
-        if (!eq.ultFecha && eq.intervenciones.length && eq.intervenciones[0].fecha) {
-          eq.ultFecha = eq.intervenciones[0].fecha;
-        }
+        eq.intervenciones.sort((a,b) => (b.fecha || '').localeCompare(a.fecha || ''));
+        if (!eq.ultFecha && eq.intervenciones.length && eq.intervenciones[0].fecha) eq.ultFecha = eq.intervenciones[0].fecha;
       }
-
-      // Agrupar por unidad
       const DB = { EDT: [], 'TDA - EMPAQUE': [], MARGESI: [], TDB: [] };
-      for (let eq of equiposMap.values()) {
-        if (DB[eq.unidad]) DB[eq.unidad].push(eq);
-        else DB['OTROS'] = DB['OTROS'] || [];
-      }
-
-      // Estadísticas
-      let totalEquipos = 0, totalOperativos = 0, totalCOIRON = 0, totalViejos = 0, totalPresupuesto = 0;
-      const intervencionesPorMes = {};
-      const trabajosNoIniciados = [];
-      const equiposSinRegistro = [];
-
+      for (let eq of equiposMap.values()) if (DB[eq.unidad]) DB[eq.unidad].push(eq);
+      let totalEquipos = 0, totalOperativos = 0, totalCOIRON = 0, totalPresupuesto = 0;
+      const trabajosNoIniciados = [], equiposSinRegistro = [];
       for (let eq of equiposMap.values()) {
         totalEquipos++;
         if (eq.estado === 'Operativa') totalOperativos++;
         if (eq.tipo === 'COIRON') totalCOIRON++;
-        else totalViejos++;
-
         eq.intervenciones.forEach(int => {
           const monto = parseFloat(String(int.presupuesto).replace(/[^0-9.-]/g, ''));
           if (!isNaN(monto) && int.estado === 'Finalizado') totalPresupuesto += monto;
-
-          if (int.fecha) {
-            const [d,m,a] = int.fecha.split('/');
-            if (a && m) {
-              const key = `${a}-${m.padStart(2,'0')}`;
-              intervencionesPorMes[key] = (intervencionesPorMes[key] || 0) + 1;
-            }
-          }
-          if (int.estado === 'No iniciado') {
-            trabajosNoIniciados.push({ unidad: eq.unidad, sector: eq.sector, codigo: eq.codigo, desc: int.desc });
-          }
+          if (int.estado === 'No iniciado') trabajosNoIniciados.push({ unidad: eq.unidad, sector: eq.sector, codigo: eq.codigo, desc: int.desc });
         });
-        if (!eq.ultFecha && eq.intervenciones.length === 0) {
-          equiposSinRegistro.push({ unidad: eq.unidad, sector: eq.sector, codigo: eq.codigo, obs: eq.observaciones });
-        }
+        if (!eq.ultFecha && eq.intervenciones.length === 0) equiposSinRegistro.push({ unidad: eq.unidad, sector: eq.sector, codigo: eq.codigo, obs: eq.observaciones });
       }
-
-      // Serie de meses (últimos 12)
-      const mesesLabels = [];
-      const mesesData = [];
-      const hoy = new Date();
-      for (let i = 11; i >= 0; i--) {
-        const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
-        const key = `${fecha.getFullYear()}-${(fecha.getMonth()+1).toString().padStart(2,'0')}`;
-        const mesLabel = fecha.toLocaleString('es', { month: 'short', year: '2-digit' }).replace('.','');
-        mesesLabels.push(mesLabel);
-        mesesData.push(intervencionesPorMes[key] || 0);
-      }
-
-      fullData = { DB, stats: { totalEquipos, totalOperativos, totalCOIRON, totalViejos, totalPresupuesto, trabajosNoIniciados, equiposSinRegistro, mesesLabels, mesesData } };
-      renderizarTodo();
-      document.getElementById('lastUpdate').innerHTML = `Actualizado ${new Date().toLocaleTimeString()}`;
+      fullData = { DB, stats: { totalEquipos, totalOperativos, totalCOIRON, totalViejos: totalEquipos - totalCOIRON, totalPresupuesto, trabajosNoIniciados, equiposSinRegistro } };
+      renderTabs();
+      renderResumen();
+      document.getElementById('lastUpdate').innerText = `Actualizado ${new Date().toLocaleTimeString()}`;
     } catch (err) {
       console.error(err);
-      document.getElementById('mainContent').innerHTML = `<div class="empty"><i class="ti ti-alert-triangle"></i> Error cargando datos: ${err.message}<br><button onclick="cargarDatos()" class="refresh-btn" style="margin-top:12px">Reintentar</button></div>`;
+      document.getElementById('mainContent').innerHTML = `<div class="empty-state">Error cargando datos: ${err.message}<br><button class="btn-refresh" onclick="cargarDatos()">Reintentar</button></div>`;
     }
   }
 
-  function formatearFecha(fechaStr) {
-    if (!fechaStr) return '';
-    let partes = fechaStr.split('/');
-    if (partes.length === 3) {
-      if (partes[0].length === 4) return `${partes[2]}/${partes[1]}/${partes[0]}`;
-      return fechaStr;
-    }
-    return fechaStr;
+  function formatearFecha(f) {
+    if (!f) return '';
+    let p = f.split('/');
+    if (p.length === 3 && p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
+    return f;
   }
 
-  function renderizarTodo() {
-    if (!fullData) return;
-    renderNavTabs();
-    renderResumen();
-    renderListasPorUnidad();
-    setTimeout(() => inicializarGraficos(), 100);
-  }
-
-  function renderNavTabs() {
-    const nav = document.getElementById('navTabs');
-    const unidades = Object.keys(fullData.DB).filter(u => fullData.DB[u].length > 0);
-    const tabsHtml = unidades.map((un, idx) => {
-      let nombre = un === 'TDA - EMPAQUE' ? 'TDA Empaque' : un;
-      const count = fullData.DB[un].length;
-      const active = idx === 0 ? 'on' : '';
-      return `<div class="ntab ${active}" onclick="showPane('${un.replace(/\s/g, '')}', this)"><i class="ti ti-${un === 'EDT' ? 'building' : (un === 'TDA - EMPAQUE' ? 'building-store' : 'map-pin')}"></i>${nombre} <span class="count">${count}</span></div>`;
+  function renderTabs() {
+    const units = Object.keys(fullData.DB).filter(u => fullData.DB[u].length);
+    const tabsHtml = units.map(u => {
+      let label = u === 'TDA - EMPAQUE' ? 'TDA Empaque' : u;
+      return `<div class="tab" data-unit="${u}"><i class="ti ti-${u === 'EDT' ? 'building' : (u === 'TDA - EMPAQUE' ? 'building-store' : 'map-pin')}"></i>${label} <span class="badge">${fullData.DB[u].length}</span></div>`;
     }).join('');
-    nav.innerHTML = `<div class="ntab on" onclick="showPane('resumen', this)"><i class="ti ti-chart-bar"></i>Resumen <span class="count">${fullData.stats.totalEquipos}</span></div>${tabsHtml}`;
-  }
-
-  function showPane(id, tabElement) {
-    document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
-    document.querySelectorAll('.ntab').forEach(t => t.classList.remove('on'));
-    if (id === 'resumen') {
-      const pane = document.getElementById('pane-resumen');
-      if (pane) pane.classList.add('on');
-    } else {
-      const pane = document.getElementById(`pane-${id}`);
-      if (pane) pane.classList.add('on');
-    }
-    if (tabElement) tabElement.classList.add('on');
+    document.getElementById('tabsContainer').innerHTML = `<div class="tab active" data-unit="resumen"><i class="ti ti-chart-bar"></i>Resumen <span class="badge">${fullData.stats.totalEquipos}</span></div>${tabsHtml}`;
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentUnit = tab.dataset.unit;
+        if (currentUnit === 'resumen') renderResumen();
+        else renderUnitTable(currentUnit);
+      });
+    });
   }
 
   function renderResumen() {
-    const { DB, stats } = fullData;
-    const totalViejos = stats.totalEquipos - stats.totalCOIRON;
-    const porcOperativos = ((stats.totalOperativos / stats.totalEquipos) * 100).toFixed(0);
+    const { stats, DB } = fullData;
     const html = `
-      <div class="kgrid">
-        <div class="kcard accent-blue"><div class="klabel">Flota total</div><div class="kval">${stats.totalEquipos}<span class="unit">eq</span></div><div class="ksub">4 unidades</div></div>
-        <div class="kcard accent-green"><div class="klabel">Operativos</div><div class="kval">${stats.totalOperativos}<span class="unit">eq</span></div><div class="ksub"><span style="color:#639922">${porcOperativos}%</span> de flota</div></div>
-        <div class="kcard accent-red"><div class="klabel">Fuera servicio</div><div class="kval">${stats.totalEquipos - stats.totalOperativos}<span class="unit">eq</span></div><div class="ksub">${100-porcOperativos}%</div></div>
-        <div class="kcard accent-blue"><div class="klabel">COIRON</div><div class="kval">${stats.totalCOIRON}<span class="unit">eq</span></div><div class="ksub">mayoría R404</div></div>
-        <div class="kcard accent-amber"><div class="klabel">Eq. Viejos</div><div class="kval">${totalViejos}<span class="unit">eq</span></div><div class="ksub">R22</div></div>
-        <div class="kcard accent-teal"><div class="klabel">Presupuesto USD</div><div class="kval">$${stats.totalPresupuesto.toLocaleString()}</div><div class="ksub">en intervenciones</div></div>
+      <div class="kpi-grid">
+        <div class="kpi-card accent-blue"><div class="kpi-label">Flota total</div><div class="kpi-value">${stats.totalEquipos}<span class="kpi-unit"> eq</span></div><div class="kpi-sub">4 unidades</div></div>
+        <div class="kpi-card accent-green"><div class="kpi-label">Operativos</div><div class="kpi-value">${stats.totalOperativos}<span class="kpi-unit"> eq</span></div><div class="kpi-sub">${Math.round(stats.totalOperativos/stats.totalEquipos*100)}% de flota</div></div>
+        <div class="kpi-card accent-red"><div class="kpi-label">Fuera servicio</div><div class="kpi-value">${stats.totalEquipos - stats.totalOperativos}<span class="kpi-unit"> eq</span></div></div>
+        <div class="kpi-card accent-amber"><div class="kpi-label">COIRON</div><div class="kpi-value">${stats.totalCOIRON}<span class="kpi-unit"> eq</span></div><div class="kpi-sub">${Math.round(stats.totalCOIRON/stats.totalEquipos*100)}%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Equipos viejos</div><div class="kpi-value">${stats.totalViejos}<span class="kpi-unit"> eq</span></div></div>
+        <div class="kpi-card accent-blue"><div class="kpi-label">Presupuesto USD</div><div class="kpi-value">$${stats.totalPresupuesto.toLocaleString()}</div></div>
       </div>
-      <div class="stat-row">
-        ${Object.entries(DB).filter(([k]) => k !== 'OTROS').map(([un, eqs]) => {
-          const total = eqs.length;
-          const operativos = eqs.filter(e => e.estado === 'Operativa').length;
-          const coiron = eqs.filter(e => e.tipo === 'COIRON').length;
-          return `<div class="stat-cell"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.4px">${un === 'TDA - EMPAQUE' ? 'TDA' : un}</div>
-            <div style="font-size:20px;font-weight:500">${total}</div><div style="font-size:11px;color:var(--color-text-tertiary)">${operativos} operativos</div>
-            <div class="progress-bar-wrap"><div class="progress-bar" style="width:${(coiron/total)*100}%;background:#185fa5"></div></div>
-          </div>`;
-        }).join('')}
+      <div class="alert-section"><div class="alert-header"><i class="ti ti-alert-triangle"></i> Trabajos no iniciados (${stats.trabajosNoIniciados.length})</div>
+        ${stats.trabajosNoIniciados.length ? stats.trabajosNoIniciados.map(p => `
+          <div class="alert-item"><div class="alert-tag"><span class="type-badge type-viejo">${p.unidad}</span></div>
+          <div class="alert-desc"><div class="alert-title">${escapeHtml(p.sector)}</div><div class="alert-code">${p.codigo}</div><div>${escapeHtml(p.desc)}</div></div></div>`).join('') : '<div class="empty-state">Sin trabajos pendientes</div>'}
       </div>
-      <div class="row2"><div class="panel"><div class="ph"><i class="ti ti-chart-bar"></i>Intervenciones por mes</div><div class="chart-box"><canvas id="cMeses"></canvas></div></div>
-      <div class="panel"><div class="ph"><i class="ti ti-chart-donut"></i>Estado flota</div><div class="legend-row"><span><span class="ld" style="background:#639922"></span>Operativos (${stats.totalOperativos})</span><span><span class="ld" style="background:#e24b4a"></span>Fuera servicio (${stats.totalEquipos - stats.totalOperativos})</span></div>
-      <div class="chart-box"><canvas id="cEstado"></canvas></div></div></div>
-      <div class="row2"><div class="panel"><div class="ph"><i class="ti ti-building"></i>Equipos por unidad</div><div class="legend-row"><span><span class="ld" style="background:#185fa5"></span>COIRON</span><span><span class="ld" style="background:#ef9f27"></span>Viejos</span></div>
-      <div class="chart-box"><canvas id="cUnidad"></canvas></div></div>
-      <div class="panel"><div class="ph"><i class="ti ti-coin"></i>Presupuesto registrado (USD)</div><div class="chart-box"><canvas id="cPresup"></canvas></div></div></div>
-      <div class="panel"><div class="ph"><i class="ti ti-alert-triangle"></i>Trabajos no iniciados — acción requerida</div><div id="pending-list"></div></div>
-      <div class="panel"><div class="ph"><i class="ti ti-clock-exclamation"></i>Equipos sin registro de mantenimiento</div><div id="sinreg-list"></div></div>
+      <div class="alert-section"><div class="alert-header"><i class="ti ti-clock-exclamation"></i> Equipos sin registro de mantenimiento (${stats.equiposSinRegistro.length})</div>
+        ${stats.equiposSinRegistro.length ? stats.equiposSinRegistro.map(s => `
+          <div class="alert-item"><div class="alert-tag"><span class="type-badge type-viejo">${s.unidad}</span></div>
+          <div class="alert-desc"><div class="alert-title">${escapeHtml(s.sector)}</div><div class="alert-code">${s.codigo}</div>${s.obs ? `<div class="alert-code">${escapeHtml(s.obs)}</div>` : ''}</div></div>`).join('') : '<div class="empty-state">Todos los equipos tienen registro</div>'}
+      </div>
     `;
-    const container = document.getElementById('mainContent');
-    container.innerHTML = html;
-    Object.keys(DB).filter(k => k !== 'OTROS').forEach(un => {
-      const paneDiv = document.createElement('div');
-      paneDiv.id = `pane-${un.replace(/\s/g, '')}`;
-      paneDiv.className = 'pane';
-      paneDiv.innerHTML = `<div class="search-wrap"><div class="search-icon-wrap"><i class="ti ti-search"></i><input class="sinput" placeholder="Buscar sector, código o descripción..." oninput="filtrarUnidad('${un}', this.value)"></div></div>
-        <div id="list-${un.replace(/\s/g, '')}"></div>`;
-      container.appendChild(paneDiv);
+    document.getElementById('mainContent').innerHTML = html;
+  }
+
+  function renderUnitTable(unit) {
+    const equipos = fullData.DB[unit] || [];
+    const tableHtml = `
+      <div class="search-box search-icon"><i class="ti ti-search"></i><input type="text" id="searchInput" class="search-input" placeholder="Buscar por sector, código o descripción..." style="padding-left:36px;"></div>
+      <div class="table-wrapper"><table id="unitTable">
+        <thead><tr><th>Sector</th><th>Código</th><th>Descripción</th><th>Gas</th><th>Estado</th><th>Tipo</th><th>Últ. mantenimiento</th></tr></thead>
+        <tbody id="tableBody"></tbody></table></div>`;
+    document.getElementById('mainContent').innerHTML = tableHtml;
+    renderTableBody(equipos);
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = equipos.filter(eq => [eq.sector, eq.codigo, eq.descripcion].join(' ').toLowerCase().includes(term));
+      renderTableBody(filtered);
     });
-    renderListasPorUnidad();
-    document.getElementById('pending-list').innerHTML = stats.trabajosNoIniciados.length ? stats.trabajosNoIniciados.map(p => `<div class="alert-row"><div class="atag"><span class="badge b-danger">${p.unidad}</span></div><div class="adesc"><div class="an">${escapeHtml(p.sector)}</div><div class="acode">${p.codigo}</div><div class="as">${escapeHtml(p.desc)}</div></div><span class="badge b-warn">No iniciado</span></div>`).join('') : '<div class="empty">Sin trabajos pendientes</div>';
-    document.getElementById('sinreg-list').innerHTML = stats.equiposSinRegistro.length ? stats.equiposSinRegistro.map(s => `<div class="alert-row"><div class="atag"><span class="badge b-none">${s.unidad}</span></div><div class="adesc"><div class="an">${escapeHtml(s.sector)}</div><div class="acode">${s.codigo}</div>${s.obs ? `<div class="as">${escapeHtml(s.obs)}</div>` : ''}</div></div>`).join('') : '<div class="empty">Todos los equipos tienen registro</div>';
   }
 
-  function renderListasPorUnidad() {
-    for (const [un, equipos] of Object.entries(fullData.DB)) {
-      if (un === 'OTROS') continue;
-      const containerId = `list-${un.replace(/\s/g, '')}`;
-      const coiron = equipos.filter(e => e.tipo === 'COIRON');
-      const viejos = equipos.filter(e => e.tipo !== 'COIRON');
-      let html = '';
-      if (coiron.length) html += `<div class="sec-hdr"><i class="ti ti-stars"></i>COIRON (${coiron.length})</div>` + coiron.map(eq => eRow(eq, un)).join('');
-      if (viejos.length) html += `<div class="sec-hdr"><i class="ti ti-clock-hour-3"></i>Equipos Viejos (${viejos.length})</div>` + viejos.map(eq => eRow(eq, un)).join('');
-      const el = document.getElementById(containerId);
-      if (el) el.innerHTML = html || '<div class="empty">Sin equipos</div>';
-    }
+  function renderTableBody(equipos) {
+    const tbody = document.getElementById('tableBody');
+    if (!tbody) return;
+    tbody.innerHTML = equipos.map(eq => `
+      <tr class="clickable-row" onclick="openModal('${eq.unidad}', '${eq.codigo}')">
+        <td>${escapeHtml(eq.sector)}</td><td style="font-family:monospace; font-size:12px;">${eq.codigo}</td>
+        <td>${escapeHtml(eq.descripcion.substring(0, 60))}${eq.descripcion.length > 60 ? '…' : ''}</td>
+        <td>${eq.gas || '—'}</td>
+        <td><span class="status-badge ${eq.estado === 'Operativa' ? 'status-operativa' : 'status-fuera'}">${eq.estado}</span></td>
+        <td><span class="type-badge ${eq.tipo === 'COIRON' ? 'type-coiron' : 'type-viejo'}">${eq.tipo}</span></td>
+        <td>${eq.ultFecha || '—'}</td>
+      </tr>
+    `).join('');
   }
-
-  function eRow(eq, unidad) {
-    const dotCls = eq.estado === 'Operativa' ? 'd-ok' : (eq.estado === 'Fuera de servicio' ? 'd-danger' : 'd-none');
-    const badgeTipo = eq.tipo === 'COIRON' ? 'b-coiron' : 'b-viejo';
-    const badgeEstado = eq.estado === 'Operativa' ? 'b-ok' : (eq.estado === 'Fuera de servicio' ? 'b-danger' : 'b-none');
-    return `<div class="erow" onclick="openModal('${unidad}', '${eq.codigo}')">
-      <div class="estatus"><div class="dot ${dotCls}"></div></div>
-      <div class="einfo"><div class="en">${escapeHtml(eq.sector)}</div><div class="ec">${eq.codigo}</div><div class="ed">${escapeHtml(eq.descripcion)}</div></div>
-      <div class="emeta"><span class="badge ${badgeTipo}">${eq.tipo}</span><span class="badge ${badgeEstado}">${eq.estado}</span><span class="etime">${eq.ultFecha || '—'}</span></div>
-    </div>`;
-  }
-
-  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
   window.openModal = function(unidad, codigo) {
     const eq = fullData.DB[unidad].find(e => e.codigo === codigo);
     if (!eq) return;
-    const presups = eq.intervenciones.filter(i => i.presupuesto && i.presupuesto !== '$0').map(i => i.presupuesto);
-    const intHTML = eq.intervenciones.length ? eq.intervenciones.map(i => `<div class="int-row"><div class="idate"><div class="idl">${i.fecha || 'Pendiente'}</div><div><span class="badge ${i.estado === 'Finalizado' ? 'b-ok' : (i.estado === 'No iniciado' ? 'b-warn' : 'b-proc')}">${i.estado}</span></div></div><div class="idesc">${escapeHtml(i.desc)}${i.obs ? `<div style="margin-top:4px;font-size:10px;">Obs: ${escapeHtml(i.obs)}</div>` : ''}${i.orden ? `<div style="font-size:10px;">Orden: ${i.orden}</div>` : ''}</div><div class="icost">${i.presupuesto || '—'}</div></div>`).join('') : '<div class="empty">Sin intervenciones registradas</div>';
-    document.getElementById('modalContent').innerHTML = `
-      <div class="mhero"><button class="mclose" onclick="closeModal()">✕ Cerrar</button><div class="mtype">${unidad} · ${eq.tipo}</div><div class="mname">${escapeHtml(eq.sector)}</div><div class="mcode">${eq.codigo}</div></div>
-      <div class="mbody"><div class="specs-grid"><div class="spec"><div class="sl">Gas</div><div class="sv">${eq.gas || '—'}</div></div><div class="spec"><div class="sl">Estado</div><div class="sv"><span class="badge ${eq.estado === 'Operativa' ? 'b-ok' : 'b-danger'}">${eq.estado}</span></div></div><div class="spec"><div class="sl">Últ. fecha</div><div class="sv">${eq.ultFecha || 'Sin registro'}</div></div><div class="spec"><div class="sl">Intervenciones</div><div class="sv">${eq.intervenciones.length}</div></div><div class="spec"><div class="sl">Presupuesto</div><div class="sv">${presups.length ? presups.join(' + ') : 'No registrado'}</div></div></div>
-      <div class="section-lbl">Descripción técnica</div><div class="obs-box">${escapeHtml(eq.descripcion)}</div>${eq.observaciones ? `<div class="section-lbl">Observaciones actuales</div><div class="obs-box obs-alert">${escapeHtml(eq.observaciones)}</div>` : ''}
-      <div class="section-lbl"><i class="ti ti-history"></i> Historial de intervenciones</div>${intHTML}</div>`;
-    document.getElementById('modalBg').classList.add('open');
+    document.getElementById('modalTitle').innerHTML = `<div><strong>${escapeHtml(eq.sector)}</strong><br><span style="font-size:12px; opacity:0.8;">${eq.codigo}</span></div>`;
+    const presupuestos = eq.intervenciones.filter(i => i.presupuesto && i.presupuesto !== '$0').map(i => i.presupuesto);
+    const intHtml = eq.intervenciones.length ? eq.intervenciones.map(i => `
+      <div class="interv-item"><div class="interv-date">${i.fecha || 'Pendiente'}<br><span class="type-badge ${i.estado === 'Finalizado' ? 'type-coiron' : (i.estado === 'No iniciado' ? 'status-fuera' : 'status-operativa')}" style="margin-top:4px; display:inline-block;">${i.estado}</span></div>
+      <div class="interv-desc">${escapeHtml(i.desc)}${i.obs ? `<div style="margin-top:5px; font-size:11px; color:var(--color-text-muted);">Obs: ${escapeHtml(i.obs)}</div>` : ''}${i.orden ? `<div style="margin-top:3px; font-size:10px;">Orden: ${i.orden}</div>` : ''}</div>
+      <div class="interv-cost">${i.presupuesto || '—'}</div></div>`).join('') : '<div class="empty-state">Sin intervenciones registradas</div>';
+    document.getElementById('modalBody').innerHTML = `
+      <div class="detail-grid"><div class="detail-item"><div class="detail-label">Gas</div><div class="detail-value">${eq.gas || '—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value"><span class="status-badge ${eq.estado === 'Operativa' ? 'status-operativa' : 'status-fuera'}">${eq.estado}</span></div></div>
+      <div class="detail-item"><div class="detail-label">Tipo</div><div class="detail-value"><span class="type-badge ${eq.tipo === 'COIRON' ? 'type-coiron' : 'type-viejo'}">${eq.tipo}</span></div></div>
+      <div class="detail-item"><div class="detail-label">Último mantenimiento</div><div class="detail-value">${eq.ultFecha || 'Sin registro'}</div></div>
+      <div class="detail-item"><div class="detail-label">Intervenciones</div><div class="detail-value">${eq.intervenciones.length}</div></div>
+      <div class="detail-item"><div class="detail-label">Presupuesto total</div><div class="detail-value">${presupuestos.length ? presupuestos.join(' + ') : 'No registrado'}</div></div></div>
+      <div class="detail-item" style="margin-bottom:12px;"><div class="detail-label">Descripción técnica</div><div class="detail-value">${escapeHtml(eq.descripcion)}</div></div>
+      ${eq.observaciones ? `<div class="detail-item" style="margin-bottom:12px;"><div class="detail-label">Observaciones actuales</div><div class="detail-value" style="color:var(--color-danger);">${escapeHtml(eq.observaciones)}</div></div>` : ''}
+      <div class="detail-label" style="margin:12px 0 8px;"><i class="ti ti-history"></i> Historial de intervenciones</div>
+      ${intHtml}
+    `;
+    document.getElementById('modalOverlay').classList.add('active');
   };
-  window.closeModal = function(e) { if (!e || e.target === document.getElementById('modalBg')) document.getElementById('modalBg').classList.remove('open'); };
-  window.filtrarUnidad = function(unidad, term) {
-    const equipos = fullData.DB[unidad] || [];
-    const filtrados = term ? equipos.filter(e => [e.sector, e.codigo, e.descripcion].join(' ').toLowerCase().includes(term.toLowerCase())) : equipos;
-    const coiron = filtrados.filter(e => e.tipo === 'COIRON');
-    const viejos = filtrados.filter(e => e.tipo !== 'COIRON');
-    let html = '';
-    if (coiron.length) html += `<div class="sec-hdr"><i class="ti ti-stars"></i>COIRON (${coiron.length})</div>` + coiron.map(eq => eRow(eq, unidad)).join('');
-    if (viejos.length) html += `<div class="sec-hdr"><i class="ti ti-clock-hour-3"></i>Equipos Viejos (${viejos.length})</div>` + viejos.map(eq => eRow(eq, unidad)).join('');
-    document.getElementById(`list-${unidad.replace(/\s/g, '')}`).innerHTML = html || '<div class="empty">Sin resultados</div>';
-  };
+  window.closeModal = function(e) { if (!e || e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('active'); };
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
-  function inicializarGraficos() {
-    if (charts.cMeses) charts.cMeses.destroy();
-    if (charts.cEstado) charts.cEstado.destroy();
-    if (charts.cUnidad) charts.cUnidad.destroy();
-    if (charts.cPresup) charts.cPresup.destroy();
-    const stats = fullData.stats;
-    const ctxM = document.getElementById('cMeses')?.getContext('2d');
-    if (ctxM) charts.cMeses = new Chart(ctxM, { type: 'bar', data: { labels: stats.mesesLabels, datasets: [{ label: 'Intervenciones', data: stats.mesesData, backgroundColor: '#378ADD', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
-    const ctxE = document.getElementById('cEstado')?.getContext('2d');
-    if (ctxE) charts.cEstado = new Chart(ctxE, { type: 'doughnut', data: { labels: ['Operativa', 'Fuera de servicio'], datasets: [{ data: [stats.totalOperativos, stats.totalEquipos - stats.totalOperativos], backgroundColor: ['#639922', '#E24B4A'], borderWidth: 0 }] }, options: { cutout: '65%', plugins: { legend: { display: false } } } });
-    const ctxU = document.getElementById('cUnidad')?.getContext('2d');
-    if (ctxU) {
-      const labels = [], coironData = [], viejoData = [];
-      for (const [un, eqs] of Object.entries(fullData.DB)) { if (un !== 'OTROS') { labels.push(un === 'TDA - EMPAQUE' ? 'TDA' : un); coironData.push(eqs.filter(e => e.tipo === 'COIRON').length); viejoData.push(eqs.filter(e => e.tipo !== 'COIRON').length); } }
-      charts.cUnidad = new Chart(ctxU, { type: 'bar', data: { labels, datasets: [{ label: 'COIRON', data: coironData, backgroundColor: '#185FA5' }, { label: 'Viejos', data: viejoData, backgroundColor: '#EF9F27' }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
-    }
-    const ctxP = document.getElementById('cPresup')?.getContext('2d');
-    if (ctxP) {
-      const intervencionesConCosto = [];
-      for (const eq of Object.values(fullData.DB).flat()) {
-        eq.intervenciones.forEach(int => { if (int.presupuesto && int.presupuesto !== '$0') { const val = parseFloat(String(int.presupuesto).replace(/[^0-9.-]/g, '')); if (!isNaN(val)) intervencionesConCosto.push({ label: eq.codigo.slice(0,12), value: val }); } });
-      }
-      const top = intervencionesConCosto.slice(0, 8);
-      charts.cPresup = new Chart(ctxP, { type: 'bar', data: { labels: top.map(t => t.label), datasets: [{ label: 'USD', data: top.map(t => t.value), backgroundColor: '#1D9E75' }] }, options: { plugins: { tooltip: { callbacks: { label: c => `$${c.raw} USD` } } } } });
-    }
-  }
-
-  document.getElementById('refreshBtn')?.addEventListener('click', () => cargarDatos());
+  document.getElementById('refreshBtn').addEventListener('click', () => cargarDatos());
   cargarDatos();
-  if (refreshInterval) clearInterval(refreshInterval);
-  refreshInterval = setInterval(() => cargarDatos(), 60000);
+  setInterval(() => cargarDatos(), 60000);
 </script>
 </body>
 </html>
